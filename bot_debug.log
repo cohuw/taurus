@@ -1,0 +1,216 @@
+2026-08-25 00:23:20,936 INFO aiogram.dispatcher: Start polling
+2026-08-25 00:23:21,048 INFO aiogram.dispatcher: Run polling for bot @grffhdgeregdhgdbot id=8606618166 - 'grffhdgeregdhgdbot'
+2026-08-25 00:23:21,684 INFO aiogram.dispatcher: Polling stopped
+2026-08-25 00:23:21,685 ERROR aiogram.dispatcher: Failed to fetch updates - TelegramNetworkError: HTTP Client says - ServerDisconnectedError: Server disconnected
+2026-08-25 00:23:21,685 WARNING aiogram.dispatcher: Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8606618166)
+2026-08-25 00:23:21,940 INFO aiogram.dispatcher: Polling stopped for bot @grffhdgeregdhgdbot id=8606618166 - 'grffhdgeregdhgdbot'
+2026-09-06 01:27:51,279 INFO aiogram.dispatcher: Start polling
+2026-09-06 01:27:51,383 INFO aiogram.dispatcher: Run polling for bot @grffhdgeregdhgdbot id=8606618166 - 'grffhdgeregdhgdbot'
+2026-09-06 01:28:01,108 INFO aiogram.event: Update id=795422934 is handled. Duration 0 ms by bot id=8606618166
+2026-09-06 01:28:09,157 INFO aiogram.event: Update id=795422935 is handled. Duration 469 ms by bot id=8606618166
+2026-09-06 01:28:10,924 INFO aiogram.event: Update id=795422936 is handled. Duration 202 ms by bot id=8606618166
+2026-09-06 01:28:12,847 INFO aiogram.event: Update id=795422937 is handled. Duration 172 ms by bot id=8606618166
+2026-09-06 01:28:19,246 INFO aiogram.event: Update id=795422938 is handled. Duration 155 ms by bot id=8606618166
+2026-09-06 01:28:21,081 INFO aiogram.event: Update id=795422939 is handled. Duration 327 ms by bot id=8606618166
+2026-09-06 01:28:22,213 INFO aiogram.event: Update id=795422940 is handled. Duration 375 ms by bot id=8606618166
+2026-09-06 01:28:23,548 INFO aiogram.event: Update id=795422941 is handled. Duration 155 ms by bot id=8606618166
+2026-09-06 01:28:27,181 INFO aiogram.event: Update id=795422942 is handled. Duration 140 ms by bot id=8606618166
+2026-09-06 01:28:27,469 INFO aiogram.event: Update id=795422943 is handled. Duration 0 ms by bot id=8606618166
+2026-09-06 01:28:29,829 INFO aiogram.event: Update id=795422944 is handled. Duration 170 ms by bot id=8606618166
+2026-09-06 01:28:31,269 INFO aiogram.event: Update id=795422945 is handled. Duration 172 ms by bot id=8606618166
+2026-09-06 01:28:39,561 INFO aiogram.event: Update id=795422946 is handled. Duration 234 ms by bot id=8606618166
+2026-09-06 01:28:45,721 INFO aiogram.event: Update id=795422947 is handled. Duration 156 ms by bot id=8606618166
+2026-09-06 01:28:48,756 INFO aiogram.event: Update id=795422948 is handled. Duration 156 ms by bot id=8606618166
+2026-09-06 01:28:52,810 INFO aiogram.event: Update id=795422949 is handled. Duration 155 ms by bot id=8606618166
+2026-09-06 01:29:12,693 INFO aiogram.event: Update id=795422950 is handled. Duration 202 ms by bot id=8606618166
+2026-09-06 01:29:22,600 INFO aiogram.event: Update id=795422951 is not handled. Duration 15 ms by bot id=8606618166
+2026-09-06 01:29:45,140 INFO aiogram.event: Update id=795422952 is handled. Duration 281 ms by bot id=8606618166
+2026-09-06 01:30:06,802 INFO aiogram.event: Update id=795422953 is handled. Duration 280 ms by bot id=8606618166
+2026-09-06 01:30:13,266 INFO aiogram.event: Update id=795422954 is handled. Duration 391 ms by bot id=8606618166
+2026-09-06 01:30:15,296 INFO aiogram.event: Update id=795422955 is handled. Duration 280 ms by bot id=8606618166
+2026-09-06 01:30:35,532 INFO aiogram.event: Update id=795422956 is handled. Duration 157 ms by bot id=8606618166
+2026-09-06 01:30:37,865 INFO aiogram.event: Update id=795422957 is handled. Duration 280 ms by bot id=8606618166
+2026-09-06 01:30:41,526 ERROR __main__: Global exception: FOREIGN KEY constraint failed
+Traceback (most recent call last):
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiogram\dispatcher\middlewares\error.py", line 27, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiogram\dispatcher\middlewares\user_context.py", line 58, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiogram\fsm\middleware.py", line 43, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiogram\dispatcher\event\telegram.py", line 126, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiogram\dispatcher\event\handler.py", line 71, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiogram\dispatcher\dispatcher.py", line 283, in _listen_update
+    return await self.propagate_event(update_type=update_type, event=event, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiogram\dispatcher\router.py", line 167, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiogram\dispatcher\router.py", line 159, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiogram\dispatcher\router.py", line 195, in _propagate_event
+    response = await router.propagate_event(update_type=update_type, event=event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiogram\dispatcher\router.py", line 167, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiogram\dispatcher\router.py", line 159, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiogram\dispatcher\router.py", line 187, in _propagate_event
+    response = await observer.trigger(event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiogram\dispatcher\event\telegram.py", line 126, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "d:\zakazi\bank\middlewares\antiflood.py", line 34, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "d:\zakazi\bank\middlewares\access.py", line 34, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiogram\dispatcher\event\handler.py", line 71, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "d:\zakazi\bank\routers\donate.py", line 100, in process_receipt
+    req_id = await donations.create_payment_request(message.from_user.id, photo_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "d:\zakazi\bank\services\donations.py", line 11, in create_payment_request
+    await self.db.execute('INSERT INTO payment_requests (user_id, photo_id) VALUES (?, ?)', (user_id, photo_id))
+  File "d:\zakazi\bank\db.py", line 202, in execute
+    await conn.execute(sql, tuple(params))
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiosqlite\core.py", line 223, in execute
+    cursor = await self._execute(self._conn.execute, sql, parameters)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiosqlite\core.py", line 160, in _execute
+    return await future
+           ^^^^^^^^^^^^
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiosqlite\core.py", line 63, in _connection_worker_thread
+    result = function()
+             ^^^^^^^^^^
+sqlite3.IntegrityError: FOREIGN KEY constraint failed
+2026-09-06 01:30:41,718 INFO aiogram.event: Update id=795422958 is handled. Duration 187 ms by bot id=8606618166
+2026-09-06 01:31:11,589 ERROR __main__: Global exception: FOREIGN KEY constraint failed
+Traceback (most recent call last):
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiogram\dispatcher\middlewares\error.py", line 27, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiogram\dispatcher\middlewares\user_context.py", line 58, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiogram\fsm\middleware.py", line 43, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiogram\dispatcher\event\telegram.py", line 126, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiogram\dispatcher\event\handler.py", line 71, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiogram\dispatcher\dispatcher.py", line 283, in _listen_update
+    return await self.propagate_event(update_type=update_type, event=event, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiogram\dispatcher\router.py", line 167, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiogram\dispatcher\router.py", line 159, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiogram\dispatcher\router.py", line 195, in _propagate_event
+    response = await router.propagate_event(update_type=update_type, event=event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiogram\dispatcher\router.py", line 167, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiogram\dispatcher\router.py", line 159, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiogram\dispatcher\router.py", line 187, in _propagate_event
+    response = await observer.trigger(event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiogram\dispatcher\event\telegram.py", line 126, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "d:\zakazi\bank\middlewares\antiflood.py", line 34, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "d:\zakazi\bank\middlewares\access.py", line 34, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiogram\dispatcher\event\handler.py", line 71, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "d:\zakazi\bank\routers\donate.py", line 100, in process_receipt
+    req_id = await donations.create_payment_request(message.from_user.id, photo_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "d:\zakazi\bank\services\donations.py", line 11, in create_payment_request
+    await self.db.execute('INSERT INTO payment_requests (user_id, photo_id) VALUES (?, ?)', (user_id, photo_id))
+  File "d:\zakazi\bank\db.py", line 202, in execute
+    await conn.execute(sql, tuple(params))
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiosqlite\core.py", line 223, in execute
+    cursor = await self._execute(self._conn.execute, sql, parameters)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiosqlite\core.py", line 160, in _execute
+    return await future
+           ^^^^^^^^^^^^
+  File "C:\Users\andy (t.me_cohuw)\AppData\Roaming\Python\Python311\site-packages\aiosqlite\core.py", line 63, in _connection_worker_thread
+    result = function()
+             ^^^^^^^^^^
+sqlite3.IntegrityError: FOREIGN KEY constraint failed
+2026-09-06 01:31:11,749 INFO aiogram.event: Update id=795422959 is handled. Duration 155 ms by bot id=8606618166
+2026-09-06 01:32:02,655 INFO aiogram.dispatcher: Polling stopped
+2026-09-06 01:32:02,656 ERROR aiogram.dispatcher: Failed to fetch updates - TelegramNetworkError: HTTP Client says - ServerDisconnectedError: Server disconnected
+2026-09-06 01:32:02,656 WARNING aiogram.dispatcher: Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8606618166)
+2026-09-06 01:32:02,917 INFO aiogram.dispatcher: Polling stopped for bot @grffhdgeregdhgdbot id=8606618166 - 'grffhdgeregdhgdbot'
+2026-09-06 01:32:09,560 INFO aiogram.dispatcher: Start polling
+2026-09-06 01:32:09,693 INFO aiogram.dispatcher: Run polling for bot @grffhdgeregdhgdbot id=8606618166 - 'grffhdgeregdhgdbot'
+2026-09-06 01:32:12,128 INFO aiogram.event: Update id=795422961 is handled. Duration 452 ms by bot id=8606618166
+2026-09-06 01:32:13,987 INFO aiogram.event: Update id=795422962 is not handled. Duration 0 ms by bot id=8606618166
+2026-09-06 01:32:15,341 INFO aiogram.event: Update id=795422963 is handled. Duration 359 ms by bot id=8606618166
+2026-09-06 01:32:15,916 INFO aiogram.event: Update id=795422964 is handled. Duration 0 ms by bot id=8606618166
+2026-09-06 01:32:20,692 INFO aiogram.event: Update id=795422965 is handled. Duration 327 ms by bot id=8606618166
+2026-09-06 01:32:23,348 INFO aiogram.event: Update id=795422966 is handled. Duration 327 ms by bot id=8606618166
+2026-09-06 01:32:25,966 INFO aiogram.event: Update id=795422967 is handled. Duration 500 ms by bot id=8606618166
+2026-09-06 01:32:29,699 INFO aiogram.event: Update id=795422968 is handled. Duration 170 ms by bot id=8606618166
+2026-09-06 01:32:34,379 INFO aiogram.event: Update id=795422969 is handled. Duration 453 ms by bot id=8606618166
+2026-09-06 01:32:44,663 INFO aiogram.event: Update id=795422970 is not handled. Duration 15 ms by bot id=8606618166
+2026-09-06 01:32:48,834 INFO aiogram.event: Update id=795422971 is not handled. Duration 16 ms by bot id=8606618166
+2026-09-06 01:32:50,841 INFO aiogram.event: Update id=795422972 is not handled. Duration 0 ms by bot id=8606618166
+2026-09-06 01:32:54,613 INFO aiogram.event: Update id=795422973 is handled. Duration 172 ms by bot id=8606618166
+2026-09-06 01:32:55,990 INFO aiogram.event: Update id=795422974 is handled. Duration 375 ms by bot id=8606618166
+2026-09-06 01:32:57,506 INFO aiogram.event: Update id=795422975 is handled. Duration 563 ms by bot id=8606618166
+2026-09-06 01:33:00,680 INFO aiogram.event: Update id=795422976 is handled. Duration 171 ms by bot id=8606618166
+2026-09-06 01:33:02,342 INFO aiogram.event: Update id=795422977 is handled. Duration 156 ms by bot id=8606618166
+2026-09-06 01:33:02,421 INFO aiogram.event: Update id=795422978 is handled. Duration 0 ms by bot id=8606618166
+2026-09-06 01:33:02,707 INFO aiogram.event: Update id=795422979 is handled. Duration 16 ms by bot id=8606618166
+2026-09-06 01:33:02,936 INFO aiogram.event: Update id=795422980 is handled. Duration 0 ms by bot id=8606618166
+2026-09-06 01:33:04,051 INFO aiogram.event: Update id=795422981 is handled. Duration 155 ms by bot id=8606618166
+2026-09-06 01:33:04,630 INFO aiogram.event: Update id=795422982 is handled. Duration 16 ms by bot id=8606618166
+2026-09-06 01:33:05,942 INFO aiogram.event: Update id=795422983 is handled. Duration 155 ms by bot id=8606618166
+2026-09-06 01:33:14,286 INFO aiogram.event: Update id=795422984 is handled. Duration 172 ms by bot id=8606618166
+2026-09-06 01:33:18,190 INFO aiogram.event: Update id=795422985 is handled. Duration 155 ms by bot id=8606618166
+2026-09-06 01:33:19,597 INFO aiogram.event: Update id=795422986 is handled. Duration 422 ms by bot id=8606618166
+2026-09-06 01:33:20,603 INFO aiogram.event: Update id=795422987 is handled. Duration 422 ms by bot id=8606618166
+2026-09-06 01:33:21,589 INFO aiogram.event: Update id=795422988 is handled. Duration 422 ms by bot id=8606618166
+2026-09-06 01:33:22,664 INFO aiogram.event: Update id=795422989 is handled. Duration 422 ms by bot id=8606618166
+2026-09-06 01:33:23,738 INFO aiogram.event: Update id=795422990 is handled. Duration 422 ms by bot id=8606618166
+2026-09-06 01:33:24,856 INFO aiogram.event: Update id=795422991 is handled. Duration 157 ms by bot id=8606618166
+2026-09-06 01:33:37,789 INFO aiogram.event: Update id=795422992 is not handled. Duration 15 ms by bot id=8606618166
+2026-09-06 01:33:39,959 INFO aiogram.event: Update id=795422993 is handled. Duration 156 ms by bot id=8606618166
+2026-09-06 01:33:42,600 INFO aiogram.event: Update id=795422994 is handled. Duration 657 ms by bot id=8606618166
+2026-09-06 01:35:41,546 INFO aiogram.dispatcher: Polling stopped
+2026-09-06 01:35:41,546 ERROR aiogram.dispatcher: Failed to fetch updates - TelegramNetworkError: HTTP Client says - ServerDisconnectedError: Server disconnected
+2026-09-06 01:35:41,546 WARNING aiogram.dispatcher: Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8606618166)
+2026-09-06 01:35:41,802 INFO aiogram.dispatcher: Polling stopped for bot @grffhdgeregdhgdbot id=8606618166 - 'grffhdgeregdhgdbot'
+2026-09-06 01:35:48,644 INFO aiogram.dispatcher: Start polling
+2026-09-06 01:35:48,769 INFO aiogram.dispatcher: Run polling for bot @grffhdgeregdhgdbot id=8606618166 - 'grffhdgeregdhgdbot'
+2026-09-06 01:35:57,334 INFO aiogram.event: Update id=795422995 is handled. Duration 359 ms by bot id=8606618166
+2026-09-06 01:36:26,849 INFO aiogram.event: Update id=795422996 is handled. Duration 390 ms by bot id=8606618166

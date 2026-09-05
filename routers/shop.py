@@ -1,0 +1,279 @@
+from __future__ import annotations
+from aiogram import F, Router
+from aiogram.exceptions import TelegramBadRequest
+from aiogram.enums import ButtonStyle
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import State, StatesGroup
+from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, Message
+import asyncio
+from config import Settings
+from keyboards import back_keyboard
+from richfmt import EM_T, bullets, divider, heading, para, send_rich, strip_tags, table
+from services.economy import EconomyError, EconomyService
+from services.shop import BonusType, ShopService
+router = Router(name='shop')
+
+class ShopState(StatesGroup):
+    waiting_bonus_data = State()
+
+def shop_keyboard(items: list[BonusType]) -> InlineKeyboardMarkup | None:
+    if not items:
+        return None
+    return InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text=f'Купить {strip_tags(item.name)} - {item.price} T', callback_data=f'confirm_buy:{item.id}', style=ButtonStyle.PRIMARY)] for item in items])
+
+async def notify_admins(callback: CallbackQuery, settings: Settings, text: str, *, log_chat_id: int | None=None, log_thread_id: int | None=None) -> None:
+    target_log_chat_id = log_chat_id if log_chat_id is not None else settings.log_chat_id
+    if target_log_chat_id:
+        try:
+            kwargs = {'chat_id': target_log_chat_id, 'text': text}
+            thread_id = log_thread_id if log_thread_id is not None else settings.player_log_thread_id
+            if thread_id:
+                kwargs['message_thread_id'] = thread_id
+            await callback.bot.send_message(**kwargs)
+        except Exception:
+            pass
+
+async def send_bonus_use_request(callback: CallbackQuery, settings: Settings, text: str, buttons: InlineKeyboardMarkup) -> bool:
+    bot = callback.bot
+    if not settings.log_chat_id or bot is None:
+        return False
+    kwargs = {'chat_id': settings.log_chat_id, 'text': text, 'reply_markup': buttons}
+    if settings.bonus_log_thread_id:
+        kwargs['message_thread_id'] = settings.bonus_log_thread_id
+    try:
+        await bot.send_message(**kwargs)
+        return True
+    except TelegramBadRequest as exc:
+        if settings.bonus_log_thread_id == 1 and 'chat not found' not in str(exc).lower():
+            kwargs.pop('message_thread_id', None)
+            try:
+                await bot.send_message(**kwargs)
+                return True
+            except Exception:
+                return False
+        return False
+    except Exception:
+        return False
+
+@router.message(F.text == 'Магазин', F.chat.type == 'private')
+async def shop_menu(message: Message, economy: EconomyService, shop: ShopService) -> None:
+    assert message.from_user is not None
+    await economy.ensure_user(message.from_user)
+    profile = await economy.profile(message.from_user.id)
+    if profile is None:
+        await message.reply('<b>Профиль не найден. Попробуй команду /start</b>')
+        return
+    items = await shop.list_bonus_types()
+    if not items:
+        await message.reply('<b>Магазин временно пуст. Загляните позже!</b>')
+        return
+    item_rows = [[item.name, item.description, f'{item.price} {EM_T} T'] for item in items]
+    await send_rich(message, [heading('Магазин Taurus Mafia'), para(f"Ваш баланс: {profile['taurons']} {EM_T} T"), divider(), table(['Бонус', 'Описание', 'Цена'], item_rows)], reply_markup=shop_keyboard(items))
+
+@router.callback_query(F.data.startswith('confirm_buy:'))
+async def confirm_purchase(callback: CallbackQuery, economy: EconomyService, shop: ShopService) -> None:
+    assert callback.from_user is not None
+    bonus_id = int((callback.data or '').split(':')[1])
+    bonus = await shop.get_bonus_type(bonus_id)
+    if bonus is None:
+        await callback.answer('Этот бонус больше не доступен', show_alert=True)
+        return
+    profile = await economy.profile(callback.from_user.id)
+    if profile is None:
+        await economy.ensure_user(callback.from_user)
+        profile = await economy.profile(callback.from_user.id)
+    assert profile is not None
+    if int(profile['taurons']) < bonus.price:
+        await callback.answer('Недостаточно средств для покупки', show_alert=True)
+        if callback.message:
+            await callback.message.answer(f"<b>Недостаточно средств</b>\n\n<b>Цена:</b> <i>{bonus.price} {EM_T} T</i>\n<b>Ваш баланс:</b> <i>{profile['taurons']} {EM_T} T</i>")
+        return
+    markup = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='Подтвердить', callback_data=f'buy_confirm:{bonus.id}', style=ButtonStyle.SUCCESS), InlineKeyboardButton(text='Отмена', callback_data='cancel_purchase', style=ButtonStyle.DANGER)]])
+    await callback.answer()
+    if callback.message:
+        await callback.message.answer(f"<b>Подтвердите покупку:</b>\n• {bonus.name}\n• Цена: <i>{bonus.price} {EM_T} T</i>\n\nВаш баланс: <i>{profile['taurons']} {EM_T} T</i> → <i>{int(profile['taurons']) - bonus.price} {EM_T} T</i>", reply_markup=markup)
+
+@router.callback_query(F.data == 'cancel_purchase')
+async def cancel_purchase(callback: CallbackQuery) -> None:
+    await callback.answer('Покупка отменена')
+    if callback.message:
+        await callback.message.delete()
+
+@router.callback_query(F.data.startswith('buy_confirm:'))
+async def process_purchase(callback: CallbackQuery, economy: EconomyService, shop: ShopService, settings: Settings) -> None:
+    assert callback.from_user is not None
+    bonus_id = int((callback.data or '').split(':')[1])
+    bonus = await shop.get_bonus_type(bonus_id)
+    if bonus is None:
+        await callback.answer('Этот бонус больше не доступен', show_alert=True)
+        return
+    profile = await economy.profile(callback.from_user.id)
+    if profile is None:
+        await callback.answer('Профиль не найден. Нажмите /start.', show_alert=True)
+        return
+    if int(profile['taurons']) < bonus.price:
+        await callback.answer(f"Недостаточно средств\n\nЦена: {bonus.price} T\nВаш баланс: {profile['taurons']} T", show_alert=True)
+        return
+    await economy.add_taurons(callback.from_user.id, -bonus.price, f'buy_bonus:{bonus.id}')
+    await economy.grant_prize(callback.from_user.id, str(bonus.id), bonus.name, 1)
+    updated = await economy.profile(callback.from_user.id)
+    assert updated is not None
+    await callback.answer()
+    if callback.message:
+        await callback.message.answer(f"<b>Покупка успешно завершена!</b>\n• {bonus.name}\n• Потрачено: <i>{bonus.price} {EM_T} T</i>\n<b>Новый баланс:</b> <i>{updated['taurons']} {EM_T} T</i>\n\nКуплено 1 шт. {bonus.name} за {bonus.price} {EM_T} T!")
+    await notify_admins(callback, settings, f'<b>Покупка бонуса</b>\nПользователь: <code>{callback.from_user.id}</code>\nБонус: {bonus.name}\nЦена: {bonus.price} {EM_T} T')
+
+@router.message(F.text == 'Мои бонусы', F.chat.type == 'private')
+async def my_bonuses(message: Message, economy: EconomyService) -> None:
+    assert message.from_user is not None
+    await economy.ensure_user(message.from_user)
+    rows = await economy.db.fetch_all('SELECT prize_code, prize_name, count FROM user_prizes WHERE user_id = ? AND count > 0 ORDER BY prize_name', (message.from_user.id,))
+    if not rows:
+        await message.reply('<b>У вас пока нет купленных бонусов.</b>')
+        return
+    keyboard_rows = []
+    bonus_items = []
+    for row in rows:
+        bonus_items.append(f"{row['prize_name']} — {row['count']} шт.")
+        keyboard_rows.append([InlineKeyboardButton(text=f"Использовать {strip_tags(row['prize_name'])}", callback_data=f"use_bonus:{message.from_user.id}:{row['prize_code']}", style=ButtonStyle.PRIMARY)])
+    await send_rich(message, [heading('Ваши бонусы'), bullets(bonus_items)], reply_markup=InlineKeyboardMarkup(inline_keyboard=keyboard_rows))
+
+PENDING_BONUSES: set[tuple[int, str]] = set()
+admin_bonus_locks: dict[tuple[int, str], asyncio.Lock] = {}
+
+def get_bonus_lock(user_id: int, code: str) -> asyncio.Lock:
+    key = (user_id, code)
+    if key not in admin_bonus_locks:
+        admin_bonus_locks[key] = asyncio.Lock()
+    return admin_bonus_locks[key]
+
+@router.callback_query(F.data.startswith('use_bonus:'))
+async def use_bonus(callback: CallbackQuery, economy: EconomyService, settings: Settings) -> None:
+    _, user_id_s, code = (callback.data or '').split(':', 2)
+    user_id = int(user_id_s)
+    if callback.from_user.id != user_id:
+        await callback.answer('Вы можете использовать только свои бонусы.', show_alert=True)
+        return
+    if (user_id, code) in PENDING_BONUSES:
+        await callback.answer('Ваша заявка на этот бонус уже находится на модерации.', show_alert=True)
+        return
+    row = await economy.db.fetch_one('SELECT prize_name FROM user_prizes WHERE user_id = ? AND prize_code = ? AND count > 0', (user_id, code))
+    if row is None:
+        await callback.answer('Бонус не найден.', show_alert=True)
+        return
+    PENDING_BONUSES.add((user_id, code))
+    buttons = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='Подтвердить', callback_data=f'confirm_use:{user_id}:{code}', style=ButtonStyle.SUCCESS), InlineKeyboardButton(text='Отклонить', callback_data=f'reject_use:{user_id}:{code}', style=ButtonStyle.DANGER)]])
+    text = f"<b>Заявка на использование бонуса</b>\nПользователь: <code>{user_id}</code>\nБонус: {row['prize_name']}"
+    sent = await send_bonus_use_request(callback, settings, text, buttons)
+    if sent:
+        await callback.answer('Заявка отправлена', show_alert=True)
+    else:
+        PENDING_BONUSES.discard((user_id, code))
+        await callback.answer('Не удалось отправить заявку в топик. Проверьте доступ бота к чату заявок.', show_alert=True)
+
+@router.callback_query(F.data.startswith('confirm_use:') | F.data.startswith('reject_use:'))
+async def process_bonus_use(callback: CallbackQuery, economy: EconomyService, settings: Settings) -> None:
+    if not await economy.is_admin(callback.from_user.id, settings):
+        await callback.answer('Нет доступа.', show_alert=True)
+        return
+    action, user_id_s, code = (callback.data or '').split(':', 2)
+    user_id = int(user_id_s)
+    lock = get_bonus_lock(user_id, code)
+    async with lock:
+        row = await economy.db.fetch_one('SELECT prize_name FROM user_prizes WHERE user_id = ? AND prize_code = ? AND count > 0', (user_id, code))
+        if row is None:
+            PENDING_BONUSES.discard((user_id, code))
+            await callback.answer('Бонус уже был использован или не найден.', show_alert=True)
+            return
+        if action == 'confirm_use':
+            try:
+                await economy.use_prize(user_id, code)
+            except EconomyError as exc:
+                PENDING_BONUSES.discard((user_id, code))
+                await callback.answer(str(exc), show_alert=True)
+                return
+            PENDING_BONUSES.discard((user_id, code))
+            await callback.answer('Использование подтверждено', show_alert=True)
+            text = f"<b>Бонус использован</b>\nПользователь: <code>{user_id}</code>\nБонус: {row['prize_name']}"
+            try:
+                await callback.bot.send_message(user_id, f"Использование бонуса <b>{row['prize_name']}</b> подтверждено.")
+            except Exception:
+                pass
+        else:
+            PENDING_BONUSES.discard((user_id, code))
+            await callback.answer('Использование отклонено', show_alert=True)
+            text = f"<b>Бонус отклонён</b>\nПользователь: <code>{user_id}</code>\nБонус: {row['prize_name']}"
+            try:
+                await callback.bot.send_message(user_id, f"Использование бонуса <b>{row['prize_name']}</b> отклонено.")
+            except Exception:
+                pass
+        if callback.message:
+            try:
+                await callback.message.edit_text(text, reply_markup=None)
+            except Exception:
+                await callback.message.answer(text)
+
+@router.callback_query(F.data == 'admin_bonuses')
+async def admin_bonuses(callback: CallbackQuery, economy: EconomyService, settings: Settings) -> None:
+    if not await economy.is_admin(callback.from_user.id, settings):
+        await callback.answer('Нет доступа.', show_alert=True)
+        return
+    await callback.answer()
+    markup = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='Список бонусов', callback_data='list_bonuses', style=ButtonStyle.PRIMARY)], [InlineKeyboardButton(text='Добавить бонус', callback_data='add_bonus', style=ButtonStyle.PRIMARY)], [InlineKeyboardButton(text='Удалить бонус', callback_data='delete_bonus', style=ButtonStyle.DANGER)], [InlineKeyboardButton(text='Назад', callback_data='admin_back', style=ButtonStyle.PRIMARY)]])
+    if callback.message:
+        await callback.message.edit_text('<b>Управление бонусами</b>', reply_markup=markup)
+
+@router.callback_query(F.data == 'list_bonuses')
+async def list_bonuses(callback: CallbackQuery, shop: ShopService) -> None:
+    await callback.answer()
+    items = await shop.list_bonus_types()
+    text = '<b>Список бонусов:</b>\n\n' + ('\n'.join((f'<code>{i.id}</code>. <b>{i.name}</b> — {i.price} {EM_T} T\n{i.description}' for i in items)) or 'Бонусов нет.')
+    if callback.message:
+        await callback.message.edit_text(text, reply_markup=back_keyboard('admin_bonuses'))
+
+@router.callback_query(F.data == 'add_bonus')
+async def add_bonus_prompt(callback: CallbackQuery, state: FSMContext) -> None:
+    await callback.answer()
+    await state.set_state(ShopState.waiting_bonus_data)
+    if callback.message:
+        await callback.message.answer('Отправь бонус в формате:\n<code>Название | Описание | Цена</code>')
+
+@router.message(ShopState.waiting_bonus_data, ~F.text.startswith('/'))
+async def add_bonus_process(message: Message, state: FSMContext, shop: ShopService) -> None:
+    try:
+        name, description, price_s = [part.strip() for part in (message.html_text or '').split('|', 2)]
+        bonus = await shop.create_bonus_type(name, description, int(price_s))
+    except Exception as exc:
+        await message.answer(f'Ошибка добавления бонуса: {exc}\nФормат: <code>Название | Описание | Цена</code>')
+        return
+    await state.clear()
+    await message.answer(f'<b>Бонус добавлен:</b> <code>{bonus.id}</code>. {bonus.name} — {bonus.price} {EM_T} T')
+
+@router.callback_query(F.data == 'delete_bonus')
+async def delete_bonus_list(callback: CallbackQuery, shop: ShopService) -> None:
+    await callback.answer()
+    items = await shop.list_bonus_types()
+    rows = [[InlineKeyboardButton(text=f'Удалить {strip_tags(i.name)}', callback_data=f'confirm_delete_bonus:{i.id}', style=ButtonStyle.DANGER)] for i in items]
+    rows.append([InlineKeyboardButton(text='Назад', callback_data='admin_bonuses', style=ButtonStyle.PRIMARY)])
+    if callback.message:
+        await callback.message.edit_text('Выбери бонус для удаления:', reply_markup=InlineKeyboardMarkup(inline_keyboard=rows))
+
+@router.callback_query(F.data.startswith('confirm_delete_bonus:'))
+async def confirm_delete_bonus(callback: CallbackQuery, shop: ShopService) -> None:
+    bonus_id = int((callback.data or '').split(':')[1])
+    bonus = await shop.get_bonus_type(bonus_id)
+    if bonus is None:
+        await callback.answer('Бонус не найден', show_alert=True)
+        return
+    await callback.answer()
+    markup = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='Удалить', callback_data=f'delete_bonus_confirm:{bonus_id}', style=ButtonStyle.DANGER), InlineKeyboardButton(text='Отмена', callback_data='admin_bonuses', style=ButtonStyle.PRIMARY)]])
+    if callback.message:
+        await callback.message.edit_text(f'Удалить бонус <b>{bonus.name}</b>?', reply_markup=markup)
+
+@router.callback_query(F.data.startswith('delete_bonus_confirm:'))
+async def delete_bonus_confirm(callback: CallbackQuery, shop: ShopService) -> None:
+    bonus_id = int((callback.data or '').split(':')[1])
+    deleted = await shop.delete_bonus_type(bonus_id)
+    await callback.answer('Бонус удалён' if deleted else 'Бонус не найден', show_alert=True)
+    if callback.message:
+        await callback.message.edit_text('Бонус удалён.' if deleted else 'Бонус не найден.', reply_markup=back_keyboard('admin_bonuses'))
