@@ -26,9 +26,8 @@ async def notify_admins(callback: CallbackQuery, settings: Settings, text: str, 
     if target_log_chat_id:
         try:
             kwargs = {'chat_id': target_log_chat_id, 'text': text}
-            thread_id = log_thread_id if log_thread_id is not None else settings.player_log_thread_id
-            if thread_id:
-                kwargs['message_thread_id'] = thread_id
+            if log_thread_id:
+                kwargs['message_thread_id'] = log_thread_id
             await callback.bot.send_message(**kwargs)
         except Exception:
             pass
@@ -121,7 +120,7 @@ async def process_purchase(callback: CallbackQuery, economy: EconomyService, sho
     await callback.answer()
     if callback.message:
         await callback.message.answer(f"<b>Покупка успешно завершена!</b>\n• {bonus.name}\n• Потрачено: <i>{bonus.price} {EM_T} T</i>\n<b>Новый баланс:</b> <i>{updated['taurons']} {EM_T} T</i>\n\nКуплено 1 шт. {bonus.name} за {bonus.price} {EM_T} T!")
-    await notify_admins(callback, settings, f'<b>Покупка бонуса</b>\nПользователь: <code>{callback.from_user.id}</code>\nБонус: {bonus.name}\nЦена: {bonus.price} {EM_T} T')
+    await notify_admins(callback, settings, f'<b>Покупка бонуса</b>\nПользователь: <code>{callback.from_user.id}</code>\nБонус: {bonus.name}\nЦена: {bonus.price} {EM_T} T', log_thread_id=settings.player_log_thread_id)
 
 @router.message(F.text == 'Мои бонусы', F.chat.type == 'private')
 async def my_bonuses(message: Message, economy: EconomyService) -> None:

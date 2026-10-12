@@ -88,12 +88,17 @@ async def send_rich(message: Message, blocks: list, reply_markup: InlineKeyboard
 async def send_rich_to_owner(message: Message, blocks: list, reply_markup: InlineKeyboardMarkup | None=None) -> Message:
     return await message.bot.send_rich_message(chat_id=Settings.owner_id, rich_message=InputRichMessage(blocks=blocks), reply_markup=reply_markup)
 
-async def send_rich_to(bot, chat_id: int | str, blocks: list, reply_markup: InlineKeyboardMarkup | None=None) -> Message:
-    return await bot.send_rich_message(chat_id=chat_id, rich_message=InputRichMessage(blocks=blocks), reply_markup=reply_markup)
+async def send_rich_to(bot, chat_id: int | str, blocks: list, reply_markup: InlineKeyboardMarkup | None=None, *, message_thread_id: int | None=None) -> Message:
+    kwargs = {}
+    if message_thread_id is not None:
+        kwargs['message_thread_id'] = message_thread_id
+    return await bot.send_rich_message(chat_id=chat_id, rich_message=InputRichMessage(blocks=blocks), reply_markup=reply_markup, **kwargs)
 
 async def log_to_coder(bot, settings, text: str) -> None:
-    if settings.coder_id:
+    chat_id = settings.log_chat_id or settings.coder_id
+    if chat_id:
         try:
-            await send_rich_to(bot, settings.coder_id, [para(f"<b>Системный лог:</b>\n{text}")])
+            thread_id = settings.admin_log_thread_id if settings.log_chat_id else None
+            await send_rich_to(bot, chat_id, [para(f"<b>Системный лог:</b>\n{text}")], message_thread_id=thread_id)
         except Exception:
             pass
